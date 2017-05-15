@@ -1,0 +1,4 @@
+---
+
+- include: build/main.yml app_vars=php7-tutorial.com/vars_build
+- include: deploy/main.yml app_vars=php7-tutorial.com/vars_production

@@ -1,0 +1,32 @@
+---
+
+- name: Create the web security group
+  ec2_group:
+    name: web_group
+    description: The default group security for the web role
+    region: "{{ app.region }}"
+    vpc_id: "{{ vpc.vpc_id }}"
+    rules:
+      - proto: tcp
+        from_port: 80
+        to_port: 80
+        cidr_ip: 0.0.0.0/0
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: "{{ host_ip.stdout }}/32"
+- name: Create the db security group
+  ec2_group:
+    name: db_group
+    description: The default group security for the db role
+    region: "{{ app.region }}"
+    vpc_id: "{{ vpc.vpc_id }}"
+    rules:
+      - proto: tcp
+        from_port: 3306
+        to_port: 3306
+        cidr_ip: 172.22.1.0/24
+      - proto: tcp
+        from_port: 22
+        to_port: 22
+        cidr_ip: "{{ host_ip.stdout }}/32"

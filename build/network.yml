@@ -1,0 +1,13 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - "../apps/{{ app_vars }}.yml"
+  tasks:
+    - shell: wget -qO- http://ipecho.net/plain ; echo
+      register: host_ip
+    - include: ../infrastructure/aws/create_vpc.yml
+    - include: ../infrastructure/aws/create_group.yml
+    - include: ../infrastructure/aws/create_elb.yml

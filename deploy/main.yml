@@ -1,0 +1,14 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - "../apps/{{ app_vars }}.yml"
+  tasks:
+    - include: ../infrastructure/aws/create_ec2.yml
+    - include: ../infrastructure/aws/register_to_elb.yml status=present
+    - include: ../infrastructure/aws/destroy_ec2.yml
+      when: "{{ source_tag.changed }}"
+    - include: ../infrastructure/aws/register_to_elb.yml status=absent
+      when: "{{ source_tag.changed }}"

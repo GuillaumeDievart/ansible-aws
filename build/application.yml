@@ -1,0 +1,48 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - "../apps/{{ app_vars }}.yml"
+  tasks:
+    - include: ../infrastructure/aws/find_ami.yml
+    - include: ../infrastructure/aws/create_ec2.yml
+      when: not image_exists
+
+- hosts: ec2hosts
+  user: ubuntu
+  sudo: yes
+  gather_facts: yes
+  vars_files:
+    - "../apps/{{ app_vars }}.yml"
+  pre_tasks:
+    - set_fact:
+        image_exists: "{{ hostvars['localhost']['image_exists'] }}"
+        source_tag: "{{ hostvars['localhost']['source_tag'] }}"
+    - set_fact:
+        image_id: "{{ hostvars['localhost']['image_id'] }}"
+      when: hostvars['localhost']['image_id'] is defined
+  tasks:
+    - name: Copy the source
+      copy:
+        directory_mode: yes
+        follow: no
+        mode: "u+rwx,g+rx,o+rx"
+        src: ".source/{{ app.name }}"
+        dest: /var/www/
+      when: not {{ image_exists | bool }}
+  roles:
+    - { role: geerlingguy.nginx, '"nginx" in roles and not image_exists' }
+    - { role: nbz4live.php-fpm, '"php" in roles and not image_exists'}
+
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  vars_files:
+    - "../apps/{{ app_vars }}.yml"
+  tasks:
+    - include: ../infrastructure/aws/create_image.yml
+      when: not {{ image_exists | bool }}
+    - include: ../infrastructure/aws/destroy_ec2.yml
+      when: not {{ image_exists | bool }}

@@ -1,0 +1,17 @@
+---
+
+app:
+  infra: aws
+  name: php7-tutorial.com
+  region: eu-west-1
+  key_name: "main-keys"
+  public_ip: "yes"
+  group: web_group
+  role: web
+  instances: 1
+  env: build
+  git_repo: ssh://git@github.com/GuillaumeDievart/php7-tutorial
+  roles:
+      - nginx
+      - php
+image_id: "ami-47a23a30"

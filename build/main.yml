@@ -1,0 +1,5 @@
+---
+
+- include: update_source.yml
+- include: network.yml
+- include: application.yml

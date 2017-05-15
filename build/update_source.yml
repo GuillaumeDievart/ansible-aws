@@ -1,0 +1,14 @@
+---
+
+- hosts: localhost
+  connection: local
+  vars_files:
+    - "../apps/{{ app_vars }}.yml"
+  tasks:
+    - git:
+        accept_hostkey: True
+        repo: "{{ app.git_repo }}"
+        dest: "./.source/{{ app.name }}"
+      register: source_tag
+    - fail: msg="The project source is up to date"
+      when: "not source_tag.changed and force_update is not defined"

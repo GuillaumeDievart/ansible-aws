@@ -1,0 +1,18 @@
+---
+
+- ec2_ami:
+    instance_id: "{{ ec2.tagged_instances[0].id }}"
+    region: "{{ app.region }}"
+    wait: yes
+    name: "{{ app.name }}-{{ source_tag.after }}"
+# Added in ansible 2.0
+#    tags:
+#      name: "{{ app.name }}-{{ source_tag.after }}"
+  register: image
+- set_fact:
+    run_once: true
+    image_id: "{{ image.ami_id }}"
+- ec2:
+    region: "{{ app.region }}"
+    state: "absent"
+    instance_ids: "{{ ec2.tagged_instances[0].id }}"

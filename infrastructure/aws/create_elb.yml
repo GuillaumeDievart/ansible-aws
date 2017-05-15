@@ -1,0 +1,12 @@
+---
+
+- name: Create an ELB
+  ec2_elb_lb:
+    state: present
+    name: "elb-{{ app.name | regex_replace('[^a-z0-9]', '-') }}"
+    region: "{{ app.region }}"
+    subnets: "{{ vpc.subnets[0].id }}"
+    listeners:
+      - protocol: http
+        load_balancer_port: 80
+        instance_port: 80

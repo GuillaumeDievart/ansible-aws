@@ -1,0 +1,15 @@
+---
+
+- ec2_ami_find:
+    region: "{{ app.region }}"
+    name: "{{ app.name }}-{{ source_tag.after }}"
+  register: ami_find
+- set_fact:
+    run_once: true
+    image_id: "{{ ami_find.results[0].ami_id }}"
+    image_exists: true
+  when: ami_find.results[0] is defined
+- set_fact:
+    run_once: true
+    image_exists: false
+  when: ami_find.results[0] is not defined

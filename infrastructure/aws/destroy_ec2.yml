@@ -1,0 +1,22 @@
+---
+
+- name: Destroy EC2 instances
+  ec2:
+    key_name: "{{ app.key_name }}"
+    assign_public_ip: "{{ app.public_ip }}"
+    vpc_subnet_id: "{{ vpc.subnets[0].id }}"
+    wait: yes
+    group: "{{ app.group }}"
+    region: "{{ app.region }}"
+    instance_type: t2.micro
+    image: "{{ image_id }}"
+    instance_tags:
+      env: "{{ app.env }}"
+      name: "{{ app.name }}"
+      tag: "{{ source_tag.before }}"
+    count_tag:
+      env: "{{ app.env }}"
+      name: "{{ app.name }}"
+      tag: "{{ source_tag.before }}"
+    exact_count: 0
+  register: ec2

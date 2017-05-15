@@ -1,0 +1,20 @@
+---
+
+- name: Create the production VPC
+  ec2_vpc:
+    state: present
+    region: "{{ app.region }}"
+    cidr_block: 172.22.0.0/16
+    resource_tags: { "env":"prod" }
+    wait: yes
+    subnets:
+      - cidr: 172.22.1.0/24
+        az: "{{ app.region }}a"
+    internet_gateway: yes
+    route_tables:
+      - subnets:
+          - 172.22.1.0/24
+        routes:
+          - dest: 0.0.0.0/0
+            gw: igw
+  register: vpc
